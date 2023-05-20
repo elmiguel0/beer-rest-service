@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import miguelo.io.beerrestservice.model.Customer;
@@ -60,6 +61,44 @@ public class CustomerserviceImpl implements CustomerService {
     @Override
     public Customer getCustomerById(UUID customerId) {
         return customerList.get(customerId);
+    }
+
+
+    @Override
+    public Customer addCustomer(Customer customer) {
+        Customer saveCustomer = Customer.builder()
+        .id(UUID.randomUUID())
+        .customerName(customer.getCustomerName())
+        .version("1.v")
+        .createdDate(LocalDateTime.now())
+        .lastModifiedDate(LocalDateTime.now())
+        .build();
+        customerList.put(saveCustomer.getId(), saveCustomer);
+        return saveCustomer;
+    }
+
+
+    @Override
+    public void updateById(UUID customerId, Customer customer) {
+        Customer updateCustomer = customerList.get(customerId);
+        updateCustomer.setCustomerName(customer.getCustomerName());
+        updateCustomer.setLastModifiedDate(LocalDateTime.now());
+        customerList.put(customerId, updateCustomer);
+    }
+
+
+    @Override
+    public void deleteById(UUID customerId) {
+        customerList.remove(customerId);
+    }
+
+
+    @Override
+    public void patchCustomerById(UUID customerId, Customer customer) {
+        Customer existing = customerList.get(customerId);
+        if (StringUtils.hasText(customer.getCustomerName())) {
+            existing.setCustomerName(customer.getCustomerName());
+        }
     }
     
 }
